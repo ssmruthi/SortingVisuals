@@ -101,24 +101,6 @@ public class Runner extends Application{
     	print(sortedData);
 	}
 
-	private void performance(Long[] perf, long timestamp,String sortnam) {
-		perf[0]=(System.currentTimeMillis()-timestamp);  //time taken
-    	
-	    perf[1]=(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()); //memory
-        
-        //Storing time taken and memory utilized in a map with key as array size
-       
-	    if(sortPerformance.containsKey(sortnam)){
-	    	performance=sortPerformance.get(sortnam);
-	    }else{
-	    	performance= new HashMap<Long,Long[]>();
-	    }
-	    
-	    performance.put((long)unsortedData.length,perf);	
-    	sortPerformance.put(sortnam,performance);
-    	
-	}
-
 	private void quick() {
 
 		Long[] perf= new Long[2];
@@ -215,23 +197,22 @@ public class Runner extends Application{
         xAxisTime.setLabel("Size of Array");
         xAxisMemory.setLabel("Size of Array");
         
-        yAxisTime.setTickLabelFormatter((new NumberAxis.DefaultFormatter(yAxisTime, "", "")));
-        yAxisMemory.setTickLabelFormatter((new NumberAxis.DefaultFormatter(xAxisMemory, "", " MB")));
-
         xAxisTime.setMinorTickVisible(false);
-        xAxisMemory.setMinorTickVisible(false);
         yAxisTime.setMinorTickVisible(false);
+        xAxisMemory.setMinorTickVisible(false);
         yAxisMemory.setMinorTickVisible(false);
 
-
+        
         yAxisTime.setLabel("Time taken in milliseconds");
         yAxisMemory.setLabel("Memory utilized in Bytes");
 
 	        LineChart<Number,Number> lineChartTime=new LineChart<Number, Number>(xAxisTime, yAxisTime);;
-	        LineChart<Number,Number> lineChartMemory=new LineChart<Number, Number>(xAxisMemory, yAxisMemory);;
+	        LineChart<Number,Number> lineChartMemory=new LineChart<Number, Number>(xAxisMemory, yAxisMemory);
 	        
 	        lineChartTime.setTitle("Sorting Performance in Time Taken");
 			lineChartMemory.setTitle("Sorting Performance in Memory  Utilization");
+			lineChartMemory.setCreateSymbols(false);
+			
 
 	        XYChart.Series<Number,Number> series;
 	        XYChart.Series<Number,Number> series1;
@@ -249,7 +230,7 @@ public class Runner extends Application{
 				//populating the series with data
 				for (long key : perf.keySet()) {
 					series.getData().add(new XYChart.Data(key, perf.get(key)[0])); //gets first elemnt of value=time taken
-					series1.getData().add(new XYChart.Data(key, (double)perf.get(key)[1]/1000000)); //gets first elemnt of value=time taken
+					series1.getData().add(new XYChart.Data(key, perf.get(key)[1])); //gets first elemnt of value=time taken
 
 				}
 				lineChartTime.getData().add(series);
@@ -262,12 +243,27 @@ public class Runner extends Application{
 		root.getChildren().addAll(lineChartTime, lineChartMemory);
 
 		Scene scene  = new Scene(root,1000,500);
+		 scene.getStylesheets().add("Charts.css");
         stage.setScene(scene);
         stage.show();
+	}
+	
+	private void performance(Long[] perf, long timestamp,String sortnam) {
+		perf[0]=(System.currentTimeMillis()-timestamp);  //time taken
+    	
+	    perf[1]=(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()); //memory
         
-        
-    
-		
+        //Storing time taken and memory utilized in a map with key as array size
+       
+	    if(sortPerformance.containsKey(sortnam)){
+	    	performance=sortPerformance.get(sortnam);
+	    }else{
+	    	performance= new HashMap<Long,Long[]>();
+	    }
+	    
+	    performance.put((long)unsortedData.length,perf);	
+    	sortPerformance.put(sortnam,performance);
+    	
 	}
     
 

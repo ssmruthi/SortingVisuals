@@ -11,9 +11,7 @@ public class InsertionSort {
 			 for(int i=j-1;i>=0;i--){
 				 
 			   if(list[j] <list[i]){
-				   int temp=list[j];
-				   list[j]=list[i];
-				   list[i]=temp;
+				   swapAt(i,j,list);
 				   j--;
 			   }
 			   

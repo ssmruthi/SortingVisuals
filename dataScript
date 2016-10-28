@@ -1,2 +1,2 @@
-1000000 #Maximum size of unsorted data to compare
-100 #Array size scaling frequency. Value indicates the scaling factor of unsorted data to compare performace. 
+10000 #Maximum size of unsorted data to compare
+2 #Array size scaling frequency. Value indicates the scaling factor of unsorted data to compare performace. 
