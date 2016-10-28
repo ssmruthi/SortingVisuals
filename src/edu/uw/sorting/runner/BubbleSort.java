@@ -1,13 +1,8 @@
 package edu.uw.sorting.runner;
 
-public class BubbleSort implements Sort{
+public class BubbleSort {
 
-	int[] list;
 	
-	
-    public void setList(int[] list) {
-		this.list = list;
-	}
 
     /*
 	 * Performs Bubble sort. The control loops through the entire array and
@@ -15,7 +10,7 @@ public class BubbleSort implements Sort{
 	 * (order of increasing value). This pass is performed until no swaps are done for an
 	 * entire array pass.
 	 */
-	public void sort(){
+	public int[] sort(int[] list){
     
 		boolean swap=true;
 		
@@ -24,18 +19,19 @@ public class BubbleSort implements Sort{
 			for(int index=0;index<list.length-1;index++){			
 	    		if(list[index+1]<list[index]){
 	    			
-	    			swapAt(index);
+	    			swapAt(index,list);
 	    			swap=true;
 	    		}
 	    	}
     	}
+    	return list;
     	
 	}
 
 	/*
 	 * Function swaps the value in the list at position i and i+1
 	 */
-	private void swapAt(int i) {
+	private void swapAt(int i,int[] list) {
 		int temp=list[i];
 		list[i]=list[i+1];
 		list[i+1]=temp;
