@@ -1,9 +1,6 @@
+
 .chart-series-line {    
     -fx-stroke-width: 2px;
     -fx-effect: null;
-    
-}
-.chart-content {
-    -fx-padding: 30px;
     
 }

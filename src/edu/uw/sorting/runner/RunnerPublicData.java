@@ -2,8 +2,13 @@ package edu.uw.sorting.runner;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -11,6 +16,7 @@ import java.util.TreeMap;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -19,7 +25,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
-public class Runner extends Application{
+public class RunnerPublicData extends Application{
 
 	static int maxSize;
 	static int scaleFactor;
@@ -40,32 +46,18 @@ public class Runner extends Application{
 	
     public static void main(String[] args) {
     	
-    	Runner run= new Runner();
-    	
-
-    	Scanner sc=new Scanner(System.in);;
+    	RunnerPublicData run= new RunnerPublicData();
+    	Scanner sc=null;
 		try {
-			//sc = new Scanner(new File("datascript"));
-			
-			System.out.println("Please enter the maximum array size to be sort.");
-			maxSize= sc.nextInt();
-			scaleFactor=10;			
-			int j=1;
-			
-			//Perform sorting based on varying array size		
-			while(j<=maxSize){	
-		  		
+				sc=new Scanner(new File("dataScript"));
 				degreeOfSortedness=0;
-				run.unsortedData=generateRandom(j);
+				run.unsortedData=populatePublicData(sc.nextLine());//generateRandom(j);
 				run.bubble();
 				run.selection();
 				run.insert();
 				run.quick();
 				run.merge();
-				
-                j=j*scaleFactor;
-                               
-             }
+			
 			
 			//Perform sorting for varying degree of sortedness :0-100% with array size fixed.
 		
@@ -73,7 +65,7 @@ public class Runner extends Application{
 			while(i<degreeArr.length){
 				degreeOfSortedness=degreeArr[i];
 				run.degree=true;
-				run.unsortedData=generateRandom(maxSize);
+				run.unsortedData=populatePublicData(sc.nextLine());//generateRandom(maxSize);
 				run.bubble();
 				run.selection();
 				run.insert();
@@ -85,7 +77,10 @@ public class Runner extends Application{
 	    	//create graphs
 			launch();		
 		
-		} catch(Exception e){
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch(Exception e){
 			System.out.println("Please try again.");
 			e.printStackTrace();
 		}finally{
@@ -166,9 +161,9 @@ public class Runner extends Application{
 		print(sortedData,"Bubble");
     }
     
-	private void print(long[] data,String sortName) {
+    private void print(long[] data,String sortName) {
 		
-	
+    	
 		try {
 		
 			if(data.length==maxSize){
@@ -218,39 +213,38 @@ public class Runner extends Application{
 	}
 
 	
-	public static long[] generateRandom(int n){
-	    	long[] arr= new long[n];
-	    	Random rand = new Random();
-	    	
-	    	if(n==0){
-	    		return new long[0];
-	    	}
-	    	//generate sorted data based on degree. Sorted Data value ranges from maxsize to infinity
-	    	int sortedSize=degreeOfSortedness*n /100;
-	    	int value=maxSize;
-	    	
-	    	
-	    	if(degreeOfSortedness ==100){
-	    		value=sortedSize+100;
-	    		for(int i=sortedSize-1;i>=0;i--){
-		    		arr[i]=value;
-		    		value=value-1;
-		    	}
-	    	}else{
-	    		for(int i=0;i<sortedSize;i++){
-		    		arr[i]=value;
-		    		value=value+rand.nextInt(5);
-		    	}
-	    		//generate random data for rest of data size. Data value ranges from 0 to maxsize
-		    	for(int i=sortedSize;i<n;i++){
-		    		arr[i]= rand.nextInt(10000000);
-		    	} 
-	    	}
-	    		    	
-	    	return arr;
-	    }
-
-		    
+	
+		
+	private static long[] populatePublicData(String filename) throws FileNotFoundException, ParseException{
+		
+		long[] arr= null;
+			int i = 0;
+			Scanner sc = new Scanner(new File(filename));
+			if (filename.endsWith("i")) {
+				arr= new long[200006];
+				DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+				
+				while (sc.hasNextLine()) {
+					String dateStr = sc.nextLine();
+					Date startDate = (Date) formatter.parse(dateStr);
+					arr[i] = (int) startDate.getTime();
+					i++;
+				} 
+				
+			}else{
+				arr=new long[233];
+				while (sc.hasNextLine()) {
+					
+					arr[i] =(int)(sc.nextDouble()*1000000);
+					i++;
+				} 
+			}
+			maxSize=arr.length;
+		
+		return arr;
+	}
+    
+    
 	@Override
 	public void start(Stage stage) throws Exception {
 
@@ -275,8 +269,6 @@ public class Runner extends Application{
         yAxisTime.setMinorTickVisible(false);
         yAxisTimeDeg.setMinorTickVisible(false);
         yAxisMemory.setMinorTickVisible(false);
-        yAxisMemoryDeg.setMinorTickVisible(false);
-
         
         
         yAxisTime.setLabel("Time taken in milliseconds");
@@ -295,12 +287,10 @@ public class Runner extends Application{
 		
         barChartMemory.setMaxHeight(300);
 		barChartMemoryDeg.setMaxHeight(300);
-
-      			
 		lineChartTime.setMaxHeight(300);
 		lineChartTimeDeg.setMaxHeight(300);
 		
-		lineChartTime.setCreateSymbols(false);
+		//lineChartTime.setCreateSymbols(false);
 		lineChartTimeDeg.setCreateSymbols(false);
 
 
@@ -321,21 +311,19 @@ public class Runner extends Application{
 					
 					//populating the series with data
 					
-					//series2.getData().add(new XYChart.Data("0 ", 0));
-					for (long key : perfDeg.keySet()) {
-						 //gets first elemnt of value=time taken
-						if(key==0){
-				
-							series2.getData().add(new XYChart.Data("Random", perfDeg.get(key)[0]));
-							series3.getData().add(new XYChart.Data("Random", perfDeg.get(key)[1])); //gets first elemnt of value=time taken
+					for (long key : perfDeg.keySet()) {if(key==0){
+						
+						series2.getData().add(new XYChart.Data("Random", perfDeg.get(key)[0]));
+						series3.getData().add(new XYChart.Data("Random", perfDeg.get(key)[1])); //gets first elemnt of value=time taken
 						}else if(key==100){
 							series2.getData().add(new XYChart.Data("Reverse", perfDeg.get(key)[0]));
 							series3.getData().add(new XYChart.Data("Reverse", perfDeg.get(key)[1])); //gets first elemnt of value=time taken
 						}else{						
-							series2.getData().add(new XYChart.Data(key+"%", perfDeg.get(key)[0]));
-							series3.getData().add(new XYChart.Data(key+"%", perfDeg.get(key)[1])); //gets first elemnt of value=time taken
+							series2.getData().add(new XYChart.Data(key+"% ", perfDeg.get(key)[0]));
+							series3.getData().add(new XYChart.Data(key+"% ", perfDeg.get(key)[1])); //gets first elemnt of value=time taken
 						}
 					}
+					
 					lineChartTimeDeg.getData().add(series2);
 					barChartMemoryDeg.getData().add(series3);
 				}else{
@@ -348,7 +336,7 @@ public class Runner extends Application{
 					series.setName(sortName + " Sort");
 					series1.setName(sortName + " Sort");
 					//populating the series with data
-					//series.getData().add(new XYChart.Data("0 ", 0));
+					series.getData().add(new XYChart.Data("0 ", 0));
 					for (long key : perf.keySet()) {
 						series.getData().add(new XYChart.Data(key+" ", perf.get(key)[0])); //gets first elemnt of value=time taken
 						series1.getData().add(new XYChart.Data(key+" ", perf.get(key)[1])); //gets first elemnt of value=time taken
